@@ -1,0 +1,43 @@
+body {
+    background: #fff;
+    color: #111;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 40px;
+}
+h1, h2 {
+    color: #111;
+}
+.entrada {
+    border-left: 4px solid #111;
+    padding-left: 10px;
+    margin-bottom: 20px;
+}
+.data{
+    color: #555;
+    font-size: 0.9em;
+}
+.titol-entrada {
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+.foto-retro {
+    border: 2px solid #111;
+    display: block;
+    margin: 10px 0;
+}
+.foto-retro.esquerra {
+    float: left;
+    margin-right: 20px;
+    margin-left: 0;
+}
+.clear {
+    clear: both;
+}
+.data-sub {
+    color: #555;
+    font-size: 0.75em;
+    margin-bottom: 8px;
+    margin-top: -5px;
+}
