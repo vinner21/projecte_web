@@ -1,4 +1,3 @@
-//Client ID: e0ff9f23-e000-4eba-884c-e79559551a47
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,12 +53,28 @@
 
         document.getElementById('login-btn').onclick = function() {
             msalInstance.loginPopup({
-                scopes: ["openid", "profile", "email"]
+                scopes: ["openid", "profile", "email", "User.Read"]
             }).then(response => {
                 const account = response.account;
                 sessionStorage.setItem('usuariMSAL', JSON.stringify(account));
-                console.log('Redirigint a usuari.html');
-                window.location.href = 'usuari.html';
+                // Ara demanem info extra a Graph
+                msalInstance.acquireTokenSilent({
+                    scopes: ["User.Read"]
+                }).then(tokenResponse => {
+                    fetch('https://graph.microsoft.com/v1.0/me', {
+                        headers: {
+                            'Authorization': `Bearer ${tokenResponse.accessToken}`
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(userInfo => {
+                        sessionStorage.setItem('infoGraph', JSON.stringify(userInfo));
+                        window.location.href = 'usuari.html';
+                    });
+                }).catch(error => {
+                    alert('No s\'ha pogut obtenir informació extra: ' + error.message);
+                    window.location.href = 'usuari.html';
+                });
             }).catch(error => {
                 alert('Error d\'autenticació: ' + error.message);
             });
