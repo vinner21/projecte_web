@@ -55,15 +55,23 @@
             msalInstance.loginPopup({
                 scopes: ["openid", "profile", "email", "User.Read"]
             }).then(response => {
-                const account = response.account;
+                let account = response.account;
+                // Si no hi ha account a la resposta, agafa el primer actiu
+                if (!account) {
+                    const allAccounts = msalInstance.getAllAccounts();
+                    if (allAccounts.length > 0) {
+                        account = allAccounts[0];
+                        msalInstance.setActiveAccount(account);
+                    }
+                } else {
+                    msalInstance.setActiveAccount(account);
+                }
                 sessionStorage.setItem('usuariMSAL', JSON.stringify(account));
-                // Estableix l'usuari actiu per a MSAL
-                msalInstance.setActiveAccount(account);
 
                 // Ara demana info extra a Graph
                 msalInstance.acquireTokenSilent({
                     scopes: ["User.Read"],
-                    account: account // <-- afegeix això!
+                    account: account
                 }).then(tokenResponse => {
                     fetch('https://graph.microsoft.com/v1.0/me', {
                         headers: {
