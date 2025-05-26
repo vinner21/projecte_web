@@ -57,9 +57,13 @@
             }).then(response => {
                 const account = response.account;
                 sessionStorage.setItem('usuariMSAL', JSON.stringify(account));
-                // Ara demanem info extra a Graph
+                // Estableix l'usuari actiu per a MSAL
+                msalInstance.setActiveAccount(account);
+
+                // Ara demana info extra a Graph
                 msalInstance.acquireTokenSilent({
-                    scopes: ["User.Read"]
+                    scopes: ["User.Read"],
+                    account: account // <-- afegeix això!
                 }).then(tokenResponse => {
                     fetch('https://graph.microsoft.com/v1.0/me', {
                         headers: {
