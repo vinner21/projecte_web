@@ -1,13 +1,17 @@
+//Client ID: e0ff9f23-e000-4eba-884c-e79559551a47
 <!DOCTYPE html>
 <html>
 <head>
     <title>Pàgina transcendental</title>
     <link rel="stylesheet" href="estil.css">
+    <script src="https://alcdn.msauth.net/browser/2.38.2/js/msal-browser.min.js"></script>
 </head>
 <body>
     <h1>Pàgina transcendental</h1>
     <p>Aquesta és la meva primera pàgina web.</p>
     <p>Canvi des de dev per fer proves.</p>
+    <button id="login-btn">Sign in with Microsoft - FVM</button>
+    <button id="logout-btn">Sign out</button>
     <h2>El meu diari</h2>
 
     <div class="entrada">
@@ -31,5 +35,41 @@
         <div class="clear"></div>
         Avui riko!<br>
     </div>
+    <script>
+        const msalConfig = {
+            auth: {
+                clientId: 'e0ff9f23-e000-4eba-884c-e79559551a47',
+                redirectUri: 'https://vinner21.github.io/projecte_web/', // sense 'index.html' al final!
+            },
+            system: {
+                allowRedirectInIframe: true
+            },
+            cache: {
+                cacheLocation: "sessionStorage",
+                storeAuthStateInCookie: false
+            }
+        };
+
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        document.getElementById('login-btn').onclick = function() {
+            msalInstance.loginPopup({
+                scopes: ["openid", "profile", "email"]
+            }).then(response => {
+                const account = response.account;
+                sessionStorage.setItem('usuariMSAL', JSON.stringify(account));
+                console.log('Redirigint a usuari.html');
+                window.location.href = 'usuari.html';
+            }).catch(error => {
+                alert('Error d\'autenticació: ' + error.message);
+            });
+        };
+
+        document.getElementById('logout-btn').onclick = function() {
+            msalInstance.logoutPopup({
+                postLogoutRedirectUri: 'http://localhost:5500/'
+            });
+        };
+    </script>
 </body>
 </html>

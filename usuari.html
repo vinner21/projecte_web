@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Informació de l'usuari</title>
+</head>
+<body>
+    <h1>Benvingut/da!</h1>
+    <div id="info"></div>
+    <a href="index.html">Torna a l'inici</a>
+    <script>
+        // Recupera la informació de l'usuari de sessionStorage
+        const user = JSON.parse(sessionStorage.getItem('usuariMSAL'));
+        if (user) {
+            document.getElementById('info').innerHTML = `
+                <p><strong>Nom:</strong> ${user.name}</p>
+                <p><strong>Email:</strong> ${user.username}</p>
+                <pre>${JSON.stringify(user, null, 2)}</pre>
+            `;
+        } else {
+            document.getElementById('info').innerHTML = "<p>No hi ha cap usuari autenticat.</p>";
+        }
+    </script>
+</body>
+</html>
