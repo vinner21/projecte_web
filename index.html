@@ -1,44 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pàgina transcendental</title>
+    <title>Pàgina transcendental - Login</title>
     <link rel="stylesheet" href="estil.css">
     <script src="https://alcdn.msauth.net/browser/2.38.2/js/msal-browser.min.js"></script>
 </head>
 <body>
     <h1>Pàgina transcendental</h1>
-    <p>Aquesta és la meva primera pàgina web.</p>
-    <p>Canvi des de dev per fer proves.</p>
+    <p>Inicia sessió per continuar:</p>
     <button id="login-btn">Sign in with Microsoft - FVM</button>
-    <button id="logout-btn">Sign out</button>
-    <h2>El meu diari</h2>
-
-    <div class="entrada">
-        <div class="data">2025-05-14</div>
-        Avui començo el meu petit diari digital inspirat en l'Amstrad CPC 6128!
-    </div>
-
-    <div class="entrada">
-        <div class="data">2025-05-13</div>
-        He après a fer servir git per gestionar els meus projectes.
-    </div>
-
-    <div class="entrada">
-        <div class="titol-entrada">Foto retro!</div>
-        <div class="data-sub">2025-05-15 18:30</div>
-        Avui he afegit una foto retro!<br>
-        <img src="fotos/exemple.jpg" alt="Descripció" class="foto-retro esquerra" width="180">
-        <div class="clear"></div>
-        Avui rikitown no retro!<br>
-        <img src="fotos/exemple.jpg" alt="Descripció" class="foto-retro esquerra" width="135">
-        <div class="clear"></div>
-        Avui riko!<br>
-    </div>
+    <p id="usuari-nom"></p>
     <script>
+        const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
         const msalConfig = {
             auth: {
                 clientId: 'e0ff9f23-e000-4eba-884c-e79559551a47',
-                redirectUri: 'https://vinner21.github.io/projecte_web/', // sense 'index.html' al final!
+                redirectUri: isLocalhost
+                    ? 'http://localhost:5500/'
+                    : 'https://vinner21.github.io/projecte_web/',
             },
             system: {
                 allowRedirectInIframe: true
@@ -51,12 +30,19 @@
 
         const msalInstance = new msal.PublicClientApplication(msalConfig);
 
+        // Mostra el nom de l'usuari si ja està logat, o un missatge si no ho està
+        const user = JSON.parse(sessionStorage.getItem('usuariMSAL'));
+        if (user && user.name) {
+            document.getElementById('usuari-nom').textContent = `Sessió iniciada com: ${user.name}`;
+        } else {
+            document.getElementById('usuari-nom').textContent = "No hi ha cap sessió iniciada.";
+        }
+
         document.getElementById('login-btn').onclick = function() {
             msalInstance.loginPopup({
                 scopes: ["openid", "profile", "email", "User.Read"]
             }).then(response => {
                 let account = response.account;
-                // Si no hi ha account a la resposta, agafa el primer actiu
                 if (!account) {
                     const allAccounts = msalInstance.getAllAccounts();
                     if (allAccounts.length > 0) {
@@ -67,34 +53,9 @@
                     msalInstance.setActiveAccount(account);
                 }
                 sessionStorage.setItem('usuariMSAL', JSON.stringify(account));
-
-                // Ara demana info extra a Graph
-                msalInstance.acquireTokenSilent({
-                    scopes: ["User.Read"],
-                    account: account
-                }).then(tokenResponse => {
-                    fetch('https://graph.microsoft.com/v1.0/me', {
-                        headers: {
-                            'Authorization': `Bearer ${tokenResponse.accessToken}`
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(userInfo => {
-                        sessionStorage.setItem('infoGraph', JSON.stringify(userInfo));
-                        window.location.href = 'usuari.html';
-                    });
-                }).catch(error => {
-                    alert('No s\'ha pogut obtenir informació extra: ' + error.message);
-                    window.location.href = 'usuari.html';
-                });
+                window.location.href = 'usuari.html';
             }).catch(error => {
                 alert('Error d\'autenticació: ' + error.message);
-            });
-        };
-
-        document.getElementById('logout-btn').onclick = function() {
-            msalInstance.logoutPopup({
-                postLogoutRedirectUri: 'https://vinner21.github.io/projecte_web/'
             });
         };
     </script>

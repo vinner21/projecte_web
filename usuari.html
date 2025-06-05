@@ -2,27 +2,52 @@
 <html>
 <head>
     <title>Informació de l'usuari</title>
+    <link rel="stylesheet" href="estil.css">
+    <script src="https://alcdn.msauth.net/browser/2.38.2/js/msal-browser.min.js"></script>
 </head>
 <body>
     <h1>Benvingut/da!</h1>
+    <button id="logout-btn">Sign out</button>
     <div id="info"></div>
-    <a href="index.html">Torna a l'inici</a>
     <script>
-        // Recupera la informació de l'usuari de sessionStorage
+        // Mostra la informació de l'usuari
         const user = JSON.parse(sessionStorage.getItem('usuariMSAL'));
-        const infoGraph = JSON.parse(sessionStorage.getItem('infoGraph'));
         if (user) {
             document.getElementById('info').innerHTML = `
                 <p><strong>Nom:</strong> ${user.name}</p>
                 <p><strong>Email:</strong> ${user.username}</p>
                 <pre>${JSON.stringify(user, null, 2)}</pre>
-                <hr>
-                <h3>Informació extra de Microsoft Graph:</h3>
-                <pre>${JSON.stringify(infoGraph, null, 2)}</pre>
             `;
         } else {
             document.getElementById('info').innerHTML = "<p>No hi ha cap usuari autenticat.</p>";
         }
+
+        // Configura el logout
+        const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const msalConfig = {
+            auth: {
+                clientId: 'e0ff9f23-e000-4eba-884c-e79559551a47',
+                redirectUri: isLocalhost
+                    ? 'http://localhost:5500/'
+                    : 'https://vinner21.github.io/projecte_web/',
+            },
+            system: {
+                allowRedirectInIframe: true
+            },
+            cache: {
+                cacheLocation: "sessionStorage",
+                storeAuthStateInCookie: false
+            }
+        };
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        document.getElementById('logout-btn').onclick = function() {
+            msalInstance.logoutPopup({
+                postLogoutRedirectUri: isLocalhost
+                    ? 'http://localhost:5500/'
+                    : 'https://vinner21.github.io/projecte_web/'
+            });
+        };
     </script>
 </body>
 </html>
