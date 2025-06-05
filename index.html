@@ -9,7 +9,6 @@
     <h1>Pàgina transcendental</h1>
     <p>Inicia sessió per continuar:</p>
     <button id="login-btn">Sign in with Microsoft - FVM</button>
-    <p id="usuari-nom"></p>
     <script>
         const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
         const msalConfig = {
@@ -29,23 +28,6 @@
         };
 
         const msalInstance = new msal.PublicClientApplication(msalConfig);
-
-        // Comprova si hi ha algun compte MSAL actiu i actualitza sessionStorage si cal
-        let account = null;
-        const allAccounts = msalInstance.getAllAccounts();
-        if (allAccounts.length > 0) {
-            account = allAccounts[0];
-            msalInstance.setActiveAccount(account);
-            sessionStorage.setItem('usuariMSAL', JSON.stringify(account));
-        }
-
-        // Mostra el nom de l'usuari si ja està logat, o un missatge si no ho està
-        const user = JSON.parse(sessionStorage.getItem('usuariMSAL'));
-        if (user && user.name) {
-            document.getElementById('usuari-nom').textContent = `Sessió iniciada com: ${user.name}`;
-        } else {
-            document.getElementById('usuari-nom').textContent = "No hi ha cap sessió iniciada.";
-        }
 
         document.getElementById('login-btn').onclick = function() {
             msalInstance.loginPopup({
