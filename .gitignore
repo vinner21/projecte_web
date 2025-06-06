@@ -1,8 +1,17 @@
-# Dependencies
+# Dependencies (NPM packages and lock files)
 node_modules/
+**/node_modules/
 package-lock.json
+**/package-lock.json
 
-# Environment
+# Backend specific files
+backend/dist/
+backend/coverage/
+backend/tmp/
+backend/.env
+backend/*.log
+
+# Environment files and secrets
 .env
 *.env.local
 *.env.development
@@ -31,6 +40,6 @@ kubectl-edit-*.yaml
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# Sistema operatiu
+# Operating System files
 .DS_Store
 Thumbs.db
