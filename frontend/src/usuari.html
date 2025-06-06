@@ -24,11 +24,14 @@
 
         // Configura el logout
         const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const localOrigin = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/`;
+        const localIndex = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/index.html`;
+
         const msalConfig = {
             auth: {
                 clientId: 'e0ff9f23-e000-4eba-884c-e79559551a47',
                 redirectUri: isLocalhost
-                    ? 'http://localhost:5500/'
+                    ? localOrigin
                     : 'https://vinner21.github.io/projecte_web/',
             },
             system: {
@@ -44,7 +47,7 @@
         document.getElementById('logout-btn').onclick = function() {
             msalInstance.logoutPopup({
                 postLogoutRedirectUri: isLocalhost
-                    ? 'http://localhost:5500/index.html'
+                    ? localIndex
                     : 'https://vinner21.github.io/projecte_web/index.html'
             });
         };

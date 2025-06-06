@@ -1,0 +1,45 @@
+# Dependencies (NPM packages and lock files)
+node_modules/
+**/node_modules/
+package-lock.json
+**/package-lock.json
+
+# Backend specific files
+backend/dist/
+backend/coverage/
+backend/tmp/
+backend/.env
+backend/*.log
+
+# Environment files and secrets
+.env
+*.env.local
+*.env.development
+*.env.production
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Kubernetes
+kubectl-edit-*.yaml
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
