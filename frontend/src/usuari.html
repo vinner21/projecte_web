@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Informació de l'usuari</title>
+    <link rel="stylesheet" href="estil.css">
+    <script src="https://alcdn.msauth.net/browser/2.38.2/js/msal-browser.min.js"></script>
+</head>
+<body>
+    <h1>Benvingut/da!</h1>
+    <button id="logout-btn">Sign out</button>
+    <div id="info"></div>
+    <script>
+        // Mostra la informació de l'usuari
+        const user = JSON.parse(sessionStorage.getItem('usuariMSAL'));
+        if (user) {
+            document.getElementById('info').innerHTML = `
+                <p><strong>Nom:</strong> ${user.name}</p>
+                <p><strong>Email:</strong> ${user.username}</p>
+                <pre>${JSON.stringify(user, null, 2)}</pre>
+            `;
+        } else {
+            document.getElementById('info').innerHTML = "<p>No hi ha cap usuari autenticat.</p>";
+        }
+
+        // Configura el logout
+        const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const localOrigin = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/`;
+        const localIndex = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/index.html`;
+
+        const msalConfig = {
+            auth: {
+                clientId: 'e0ff9f23-e000-4eba-884c-e79559551a47',
+                redirectUri: isLocalhost
+                    ? localOrigin
+                    : 'https://vinner21.github.io/projecte_web/',
+            },
+            system: {
+                allowRedirectInIframe: true
+            },
+            cache: {
+                cacheLocation: "sessionStorage",
+                storeAuthStateInCookie: false
+            }
+        };
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        document.getElementById('logout-btn').onclick = function() {
+            msalInstance.logoutPopup({
+                postLogoutRedirectUri: isLocalhost
+                    ? localIndex
+                    : 'https://vinner21.github.io/projecte_web/index.html'
+            });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pàgina transcendental - Login</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="estil.css">
+    <script src="https://alcdn.msauth.net/browser/2.38.2/js/msal-browser.min.js"></script>
+</head>
+<body>
+    <h1>Pàgina transcendental</h1>
+    <p>Inicia sessió per continuar:</p>
+    <button id="login-btn">Sign in with Microsoft - FVM</button>
+
+    <!-- Mou tot el teu script aquí, just abans de </body> -->
+    <script>
+        // Configuració MSAL
+        const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const localOrigin = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/`;
+        const msalConfig = {
+            auth: {
+                clientId: 'e0ff9f23-e000-4eba-884c-e79559551a47',
+                redirectUri: isLocalhost
+                    ? localOrigin
+                    : 'https://vinner21.github.io/projecte_web/',
+            },
+            system: {
+                allowRedirectInIframe: true
+            },
+            cache: {
+                cacheLocation: "sessionStorage",
+                storeAuthStateInCookie: false
+            }
+        };
+
+        console.log("msalConfig definit");
+
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        console.log("msalInstance creat");        
+
+        // Primer assignem l'event al botó
+        document.getElementById('login-btn').onclick = function() {
+            msalInstance.loginPopup({
+                scopes: ["openid", "profile", "email", "User.Read"]
+            }).then(response => {
+                let account = response.account;
+                if (!account) {
+                    const allAccounts = msalInstance.getAllAccounts();
+                    if (allAccounts.length > 0) {
+                        account = allAccounts[0];
+                        msalInstance.setActiveAccount(account);
+                    }
+                } else {
+                    msalInstance.setActiveAccount(account);
+                }
+                sessionStorage.setItem('usuariMSAL', JSON.stringify(account));
+                window.location.href = 'usuari.html';
+            }).catch(error => {
+                alert('Error d\'autenticació: ' + error.message);
+            });
+        };
+
+        console.log("Assignant onclick");
+
+        // Després fem la crida al backend, però sense sobreescriure tot el body
+        const backendPort = 30080;
+        const backendUrl = `${window.location.protocol}//${window.location.hostname}:${backendPort}/api/hello`;
+        fetch(backendUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Creem un nou element per la resposta
+                const resposta = document.createElement('p');
+                resposta.textContent = `Resposta del backend: ${data.message}`;
+                document.body.appendChild(resposta);
+            })
+            .catch(error => {
+                const errorElement = document.createElement('p');
+                errorElement.textContent = `Error: ${error}`;
+                document.body.appendChild(errorElement);
+            });
+    </script>
+</body>
+</html>
